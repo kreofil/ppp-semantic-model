@@ -1,0 +1,3 @@
+FuncAdd02 << \ x@(int,int) -> int {
+    x:+:++:return;
+}

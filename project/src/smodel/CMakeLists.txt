@@ -28,4 +28,3 @@ set(SOURCE_LIB
 )
 
 add_library(smodel STATIC ${SOURCE_LIB})   # Создание статической библиотеки
-

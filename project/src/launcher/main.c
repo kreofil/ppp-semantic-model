@@ -5,14 +5,16 @@
 #include <sys/stat.h>
 #include <sys/sysmacros.h>
 #include <time.h>
+// #include <err.h>
+#include <wchar.h>
+#include <locale.h>
 
-#include "constant-spec.h"
-#include "context-spec.h"
-
-struct Constant<integer> intConstExt;
-// struct Context<constant<integer> > intConstContextExt;
+// Начальные установки параметров компилятора и его запуск
+_Bool StartCompiler(wchar_t *in, size_t in_len);
 
 int main(int argc, char *argv[]) {
+  setlocale(LC_ALL, ""); //get the OS's locale.
+
   printf("Start\n");
 
   struct stat sb;
@@ -21,6 +23,7 @@ int main(int argc, char *argv[]) {
     fprintf(stderr, "Usage: %s <pathname>\n", argv[0]);
     exit(EXIT_FAILURE);
   }
+
 
   if (lstat(argv[1], &sb) == -1) {
     perror("lstat");
@@ -70,10 +73,32 @@ int main(int argc, char *argv[]) {
   FILE *inFile = fopen(argv[1], "r");
   size_t stringLength = fread(unitBuffer, sizeof(char), fileSize, inFile);
   fclose(inFile);
+
+  // Тестовый вывод информации о прочитанном файле.
   unitBuffer[stringLength] = '\0';
   printf("stringLength = %ld\n", stringLength);
-  printf("%s", unitBuffer);
+  // printf("%s", unitBuffer);
+
+  // Формирование строки широких символов и заполнение ее
+  wchar_t *unitBufferUtf32 = malloc(stringLength * 4);
+  // Перенос текущей строки в строку рун
+  size_t widthLengthUtf32 = mbstowcs(unitBufferUtf32, unitBuffer, stringLength);
+  if(widthLengthUtf32 == -1) {
+    printf("Incorrect moving of unitBuffer to unitBufferUtf32\n");
+    exit(5);
+  }
+  unitBufferUtf32[widthLengthUtf32+1] = L'\0';
+  printf("widthLengthUtf32 = %ld\n", widthLengthUtf32);
+
+  // Вывод широкой строки на дисплей.
+  // printf("%ls\n", unitBufferUtf32);
+
+  // Запуск компилятора
+  StartCompiler(unitBufferUtf32, widthLengthUtf32);
+
+  // Очистка выделенной памяти
   free(unitBuffer);
+  free(unitBufferUtf32);
 
   printf("Finish\n");
   exit(EXIT_SUCCESS);
