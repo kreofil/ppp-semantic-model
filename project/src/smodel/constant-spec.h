@@ -16,6 +16,6 @@ Constant + <integer: ConstantInt;>;
 
 //------------------------------------------------------------------------------
 // Функция вывода значения целочисленной константы
-void DebugOutOfConstant<Constant<integer>* constant>(FILE* file);
+void DebugOutOfConstant<Constant.integer* constant>(FILE* file);
 
 #endif // __constant_spec__

@@ -8,7 +8,7 @@
 
 //------------------------------------------------------------------------------
 // Функция вывода значения целочисленной константы
-void DebugOutOfConstant<struct Constant* constant>(FILE* file) {
+void DebugOutOfConstant<Constant* constant>(FILE* file) {
   fprintf(file, "Unknown constant\n");
 }
 
@@ -18,7 +18,7 @@ void DebugOutOfConstant<struct Constant* constant>(FILE* file) {
 
 //------------------------------------------------------------------------------
 // Функция вывода значения целочисленной константы
-void DebugOutOfConstant<struct Constant<integer>* constant>(FILE* file) {
+void DebugOutOfConstant<Constant.integer* constant>(FILE* file) {
   printf("Check point: const int ---> ");
   fprintf(file, "const int = %d\n", constant->@constValue);
 }

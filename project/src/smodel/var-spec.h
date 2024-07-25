@@ -16,6 +16,6 @@ Var + <integer: VarInt;>;
 
 //------------------------------------------------------------------------------
 // Функция вывода значения целочисленной переменной
-void DebugOutOfVar<Var<integer>* pVar>(FILE* file);
+void DebugOutOfVar<Var.integer* pVar>(FILE* file);
 
 #endif // __var_spec__

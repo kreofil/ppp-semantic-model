@@ -13,6 +13,6 @@ typedef struct Type {int size;}< : > Type;
 // Функции для работы с типами
 
 // Обобщенная функция вывода значения типа
-void DebugOutOfType<struct Type* type>(FILE* file);
+void DebugOutOfType<Type* type>(FILE* file);
 
 #endif // __type__

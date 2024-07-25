@@ -14,6 +14,6 @@ typedef struct Var {Type *pType;}< : > Var;
 // Функции для работы с переменными
 
 // Обобщенная функция вывода значения переменной
-void DebugOutOfVar<struct Var* var>(FILE* file);
+void DebugOutOfVar<Var* var>(FILE* file);
 
 #endif // __var__

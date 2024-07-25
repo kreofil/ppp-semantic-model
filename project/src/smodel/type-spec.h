@@ -17,6 +17,6 @@ Type + <integer: TypeInt;>;
 
 //------------------------------------------------------------------------------
 // Функция вывода значения целочисленного типа
-void DebugOutOfType<Type<integer>* pType>(FILE* file);
+void DebugOutOfType<Type.integer* pType>(FILE* file);
 
 #endif // __type_spec__

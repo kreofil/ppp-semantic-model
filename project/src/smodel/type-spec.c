@@ -8,7 +8,7 @@
 
 //------------------------------------------------------------------------------
 // Функция вывода значения целочисленного типа
-void DebugOutOfType<struct Type* type>(FILE* file) {
+void DebugOutOfType<Type* type>(FILE* file) {
   fprintf(file, "Unknown type\n");
 }
 
@@ -18,7 +18,7 @@ void DebugOutOfType<struct Type* type>(FILE* file) {
 
 //------------------------------------------------------------------------------
 // Функция вывода значения целочисленного типа
-void DebugOutOfType<struct Type<integer>* pType>(FILE* file) {
+void DebugOutOfType<Type.integer* pType>(FILE* file) {
   printf("Check point: type int ---> ");
   fprintf(file, "type int, size = %d\n", pType->size);
 }

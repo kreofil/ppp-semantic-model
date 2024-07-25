@@ -21,21 +21,21 @@ Context + <var: Var;>;
 
 //------------------------------------------------------------------------------
 // Функция вывода значения контекста константы
-void DebugOutOfContext<Context<constant>* context>(FILE* file);
+void DebugOutOfContext<Context.constant* context>(FILE* file);
 
 // Функция, создающая контекст для целочисленной константы
 Context* CreateContextConstInt(int value);
 
 //------------------------------------------------------------------------------
 // Функция вывода значения контекста типа
-void DebugOutOfContext<Context<type>* context>(FILE* file);
+void DebugOutOfContext<Context.type* context>(FILE* file);
 
 // Функция, создающая контекст для целочисленного типа
 Context* CreateContextTypeInt();
 
 //------------------------------------------------------------------------------
 // Функция вывода значения контекста переменной
-void DebugOutOfContext<Context<var>* context>(FILE* file);
+void DebugOutOfContext<Context.var* context>(FILE* file);
 
 // Функция, создающая контекст для целочисленной переменной
 Context* CreateContextVarInt(Type* pType, int value);

@@ -13,7 +13,7 @@
 
 //------------------------------------------------------------------------------
 // Функция вывода содержимого контекста
-void DebugOutOfContext<struct Context* context>(FILE* file) {
+void DebugOutOfContext<Context* context>(FILE* file) {
   fprintf(file, "Unknown context\n");
 }
 
@@ -23,7 +23,7 @@ void DebugOutOfContext<struct Context* context>(FILE* file) {
 
 //------------------------------------------------------------------------------
 // Функция вывода значения контекста константы
-void DebugOutOfContext<struct Context<constant>* context>(FILE* file) {
+void DebugOutOfContext<Context.constant* context>(FILE* file) {
   printf("Check point: CONST context ---> ");
   // struct Context<constant>* pContext = &context->@;
   // DebugOutOfConstant<pContext>(file);
@@ -33,8 +33,8 @@ void DebugOutOfContext<struct Context<constant>* context>(FILE* file) {
 //------------------------------------------------------------------------------
 // Функция, создающая контекст для именованной целочисленной константы
 Context* CreateContextConstInt(int value) {
-  struct Context<constant<integer> > *context =
-          create_spec(Context<constant<integer> >);
+  struct Context.constant.integer *context =
+          create_spec(Context.constant.integer);
   context->@.@constValue = value;
   return (Context*)context;
 }
@@ -45,7 +45,7 @@ Context* CreateContextConstInt(int value) {
 
 //------------------------------------------------------------------------------
 // Функция вывода значения контекста типа
-void DebugOutOfContext<Context<type>* context>(FILE* file) {
+void DebugOutOfContext<Context.type* context>(FILE* file) {
   printf("Check point: TYPE context ---> ");
   DebugOutOfType<&(context->@)>(file);
 }
@@ -53,8 +53,8 @@ void DebugOutOfContext<Context<type>* context>(FILE* file) {
 //------------------------------------------------------------------------------
 // Функция, создающая контекст для целочисленного типа
 Context* CreateContextTypeInt() {
-  struct Context<type<integer> > *context =
-          create_spec(Context<type<integer> >);
+  struct Context.type.integer *context =
+          create_spec(Context.type.integer);
   context->@.size = sizeof(int);
   return (Context*)context;
 }
@@ -65,7 +65,7 @@ Context* CreateContextTypeInt() {
 
 //------------------------------------------------------------------------------
 // Функция вывода значения контекста переменной
-void DebugOutOfContext<Context<var>* context>(FILE* file) {
+void DebugOutOfContext<Context.var* context>(FILE* file) {
   printf("Check point: VAR context ---> ");
   DebugOutOfVar<&(context->@)>(file);
 }
@@ -73,8 +73,8 @@ void DebugOutOfContext<Context<var>* context>(FILE* file) {
 //------------------------------------------------------------------------------
 // Функция, создающая контекст для целочисленной переменной
 Context* CreateContextVarInt(Type* pType, int value) {
-  struct Context<var<integer> > *context =
-          create_spec(Context<var<integer> >);
+  struct Context.var.integer *context =
+          create_spec(Context.var.integer);
   context->@.pType = pType;
   context->@.@value = value;
   return (Context*)context;
