@@ -4,10 +4,10 @@ set(CMAKE_C_COMPILER ppclang)
 set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type is Debug" FORCE)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
 
-add_executable(obould main.c ${SOURCE_FILES})
+add_executable(test-instruction-01 main.c ${SOURCE_FILES})
 
 # Линковка программы с библиотеками
-target_link_libraries(obould
+target_link_libraries(test-instruction-01
     -Wl,--whole-archive
         smodel
     -Wl,--no-whole-archive

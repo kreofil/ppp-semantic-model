@@ -6,10 +6,11 @@
 #include <sys/sysmacros.h>
 #include <time.h>
 
-#include "context.h"
+#include "constant-spec.h"
+#include "context-spec.h"
 
-struct Constant.Int intConstExt;
-// struct Context<constant<Int> > intConstContextExt;
+struct Constant.integer intConstExt;
+// struct Context<constant<integer> > intConstContextExt;
 
 int main(int argc, char *argv[]) {
   printf("Start\n");

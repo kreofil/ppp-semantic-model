@@ -8,23 +8,22 @@ set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type is Debug" FORCE)
 set(SOURCE_LIB
     # headers
     constant.h
-    constant-spec.h
     type.h
-    type-spec.h
-    var.h
-    var-spec.h
-
+    variable.h
+    operand.h
+    instruction.h
     context.h
-    context-spec.h
     name-table.h
 
     #sources
-    constant-spec.c
-    type-spec.c
-    var-spec.c
-
-    context-spec.c
+    constant.c
+    type.c
+    variable.c
+    operand.c
+    instruction.c
+    context.c
     name-table.c
 )
 
 add_library(smodel STATIC ${SOURCE_LIB})   # Создание статической библиотеки
+

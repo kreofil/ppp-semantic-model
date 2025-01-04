@@ -1,3 +1,0 @@
-func x@int -> signal {
-    x:!:return;
-} >> FuncSenSignal03;
