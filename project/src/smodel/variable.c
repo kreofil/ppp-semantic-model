@@ -50,7 +50,12 @@ void DebugOutOfVariableCommon(Variable* variable, FILE* file) {
   fprintf(file, "    ");
   DebugOutOfVariable<variable>(file);
   fprintf(file, "    Value. ");
-  DebugOutOfConstant<variable->varValue>(file);
+  if(variable->varValue != NULL){
+    DebugOutOfConstant<variable->varValue>(file);
+  } else {
+    fprintf(file, "Unknown\n");
+  }
+
 }
 
 //------------------------------------------------------------------------------

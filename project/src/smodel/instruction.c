@@ -62,83 +62,31 @@ void AppendToInstructionList(InstructionList* iList, Instruction* instruction) {
 
 //------------------------------------------------------------------------------
 // Отладочная функция вывода информации при неизвестной инструкции
-void DebugOutOfInstruction<struct Instruction* instruction>(FILE* file) {
+void DebugOutOfInstruction<Instruction* instruction>(FILE* file) {
   fprintf(file, "Instruction. Unknown Instruction\n");
 }
 
 //------------------------------------------------------------------------------
 // Отладочная информация об инструкции Halt
-void DebugOutOfInstruction<struct Instruction.Halt* instruction>(FILE* file) {
+void DebugOutOfInstruction<Instruction.Halt* instruction>(FILE* file) {
   fprintf(file, "Instruction Нalt\n");
 }
 
 //------------------------------------------------------------------------------
 // Отладочная информация об инструкции Exit
-
-// Выделение корректных констант инструкции Exit
-void DebugOutOfConstantExit<Constant* constant>(FILE* file) {
-  fprintf(file, "Forbidden constant type of Exit Instruction (not Int)\n  ");
-}
-void DebugOutOfConstantExit<Constant.Int* constant>(FILE* file) {
-  fprintf(file, "Exit(%d)\n", constant->@constValue);
-}
-
-// Выделение корректных типов переменных инструкции Exit
-void DebugOutOfVarTypeExit<Type* type>(FILE* file) {
-  fprintf(file, "Forbidden variable type of Exit Instruction (not Int)\n  ");
-}
-void DebugOutOfVarTypeExit<Type.Int* varType>(FILE* file) {
-  DebugOutOfType<varType>(file);
-}
-
-// Выделение корректных операндов инструкции Exit
-void DebugOutOfOperandExit<Operand* opd>(FILE* file) {
-  fprintf(file, "Forbidden operand of Exit Instruction\n  ");
-}
-void DebugOutOfOperandExit<struct Operand.Const* opd>(FILE* file) {
-  Constant* constant = opd->@;
-  // DebugOutOfConstant<constant>(file);
-  DebugOutOfConstantExit<constant>(file);
-}
-void DebugOutOfOperandExit<struct Operand.Var* opd>(FILE* file) {
-  Variable* variable = opd->@;
-  Type* varType = variable->varType;
-  // DebugOutOfType<varType>(file);
-  fprintf(file, "Exit(Variable). ");
-  fprintf(file, "    ");
-  DebugOutOfVariable<variable>(file);
-  fprintf(file, "    Value. ");
-  DebugOutOfConstant<variable->varValue>(file);
-  fprintf(file, "    Type = ");
-  DebugOutOfVarTypeExit<varType>(file);
-}
-
-
-// Непосредственный вывод инструкции Exit
-void DebugOutOfInstruction<struct Instruction.Exit* instruction>(FILE* file) {
+void DebugOutOfInstruction<Instruction.Exit* instruction>(FILE* file) {
   fprintf(file, "Instruction Exit\n  ");
   Operand* opd = instruction->@opd;
-  // DebugOutOfOperand<opd>(file);
-  DebugOutOfOperandExit<opd>(file);
-}
-
-//==============================================================================
-// Функции, создающие инструкции
-//==============================================================================
-
-//------------------------------------------------------------------------------
-// Создание инструкции Halt
-Instruction* CreateInstructionHalt() {
-  struct Instruction.Halt* instruction = create_spec(Instruction.Halt);
-  instruction->next = NULL;
-  return (Instruction*)instruction;
+  DebugOutOfOperand<opd>(file);
 }
 
 //------------------------------------------------------------------------------
-// Создание инструкции Exit
-Instruction* CreateInstructionExit(Operand* opd) {
-  struct Instruction.Exit* instruction = create_spec(Instruction.Exit);
-  instruction->next = NULL;
-  instruction->@opd = opd;
-  return (Instruction*)instruction;
+// Отладочная информация об инструкции Minus
+void DebugOutOfInstruction<Instruction.Minus* instruction>(FILE* file) {
+  fprintf(file, "Instruction Minus\n  ");
+  Operand* opd = instruction->@opd1;
+  DebugOutOfOperand<opd>(file);
+  fprintf(file, "     -> ");
+  opd = instruction->@opd0;
+  DebugOutOfOperand<opd>(file);
 }

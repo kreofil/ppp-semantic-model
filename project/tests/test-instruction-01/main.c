@@ -36,6 +36,12 @@ int main(int argc, char *argv[]) {
   i01 = CreateInstructionExit(opd03);
   AppendToInstructionList(&iList01, i01);
 
+  i01 = CreateInstructionMinus(opd01);
+  AppendToInstructionList(&iList01, i01);
+
+  i01 = CreateInstructionMinus(opd03);
+  AppendToInstructionList(&iList01, i01);
+
   DebugOutOfInstructionList(&iList01, stdout);
 
   printf("Stop\n");

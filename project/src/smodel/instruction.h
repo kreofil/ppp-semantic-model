@@ -30,20 +30,21 @@ typedef struct OneOperand {
 } OneOperand;
 // Для инструкций с двумя операндами
 typedef struct TwoOperands {
+  Operand* opd0;
   Operand* opd1;
-  Operand* opd2;
 } TwoOperands;
 // Для инструкций с тремя операндами
 typedef struct ThreeOperands {
+  Operand* opd0;
   Operand* opd1;
   Operand* opd2;
-  Operand* opd3;
 } ThreeOperands;
 
 //------------------------------------------------------------------------------
 // Специализации инструкций
 Instruction + <Halt: void;>;          // Инструкция останова
-Instruction + <Exit: OneOperand;>;   // Инструкция прерывания с кодом ошибки
+Instruction + <Exit: OneOperand;>;    // Инструкция прерывания с кодом ошибки
+Instruction + <Minus: TwoOperands;>;  // Инструкция смены знака числа
 
 
 //------------------------------------------------------------------------------
@@ -68,5 +69,7 @@ void DebugOutOfInstruction<struct Instruction* instruction>(FILE* file);
 Instruction* CreateInstructionHalt();
 // Создание инструкции Exit
 Instruction* CreateInstructionExit(Operand* opd);
+// Создание инструкции Minus
+Instruction* CreateInstructionMinus(Operand* src);
 
 #endif // __instruction__

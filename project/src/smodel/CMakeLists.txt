@@ -21,6 +21,7 @@ set(SOURCE_LIB
     variable.c
     operand.c
     instruction.c
+    instruction-create.c
     context.c
     name-table.c
 )
