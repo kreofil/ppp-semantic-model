@@ -36,10 +36,21 @@ int main(int argc, char *argv[]) {
   i01 = CreateInstructionExit(opd03);
   AppendToInstructionList(&iList01, i01);
 
+  // Minus
   i01 = CreateInstructionMinus(opd01);
   AppendToInstructionList(&iList01, i01);
 
   i01 = CreateInstructionMinus(opd03);
+  AppendToInstructionList(&iList01, i01);
+
+  // Add
+  i01 = CreateInstructionAdd(opd01, opd01);
+  AppendToInstructionList(&iList01, i01);
+  i01 = CreateInstructionAdd(opd01, opd03);
+  AppendToInstructionList(&iList01, i01);
+  i01 = CreateInstructionAdd(opd03, opd01);
+  AppendToInstructionList(&iList01, i01);
+  i01 = CreateInstructionAdd(opd03, opd03);
   AppendToInstructionList(&iList01, i01);
 
   DebugOutOfInstructionList(&iList01, stdout);

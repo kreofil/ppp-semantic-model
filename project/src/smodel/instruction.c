@@ -90,3 +90,17 @@ void DebugOutOfInstruction<Instruction.Minus* instruction>(FILE* file) {
   opd = instruction->@opd0;
   DebugOutOfOperand<opd>(file);
 }
+
+//------------------------------------------------------------------------------
+// Отладочная информация об инструкции Add
+void DebugOutOfInstruction<Instruction.Add* instruction>(FILE* file) {
+  fprintf(file, "Instruction Add\n  ");
+  Operand* opd = instruction->@opd0;
+  DebugOutOfOperand<opd>(file);
+  fprintf(file, "     = ");
+  opd = instruction->@opd1;
+  DebugOutOfOperand<opd>(file);
+  fprintf(file, "       + ");
+  opd = instruction->@opd2;
+  DebugOutOfOperand<opd>(file);
+}

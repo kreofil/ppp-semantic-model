@@ -45,7 +45,7 @@ typedef struct ThreeOperands {
 Instruction + <Halt: void;>;          // Инструкция останова
 Instruction + <Exit: OneOperand;>;    // Инструкция прерывания с кодом ошибки
 Instruction + <Minus: TwoOperands;>;  // Инструкция смены знака числа
-
+Instruction + <Add: ThreeOperands;>;  // Инструкция сложения
 
 //------------------------------------------------------------------------------
 // Функции для работы со списками инструкций
@@ -71,5 +71,6 @@ Instruction* CreateInstructionHalt();
 Instruction* CreateInstructionExit(Operand* opd);
 // Создание инструкции Minus
 Instruction* CreateInstructionMinus(Operand* src);
-
+// Создание инструкции сложения
+Instruction* CreateInstructionAdd(Operand* src1, Operand* src2);
 #endif // __instruction__
