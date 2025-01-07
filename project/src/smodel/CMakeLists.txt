@@ -14,16 +14,20 @@ set(SOURCE_LIB
     instruction.h
     context.h
     name-table.h
+    # global.h
 
     #sources
     constant.c
     type.c
     variable.c
     operand.c
-    instruction.c
-    instruction-create.c
+    instruction-dbg-out.c
+    instruction-create-01.c
+    instruction-create-02.c
+    instruction-list.c
     context.c
     name-table.c
+    # global.c
 )
 
 add_library(smodel STATIC ${SOURCE_LIB})   # Создание статической библиотеки

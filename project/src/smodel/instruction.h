@@ -73,4 +73,5 @@ Instruction* CreateInstructionExit(Operand* opd);
 Instruction* CreateInstructionMinus(Operand* src);
 // Создание инструкции сложения
 Instruction* CreateInstructionAdd(Operand* src1, Operand* src2);
+
 #endif // __instruction__

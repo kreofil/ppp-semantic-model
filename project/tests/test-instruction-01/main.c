@@ -1,15 +1,22 @@
 // main.c
-#include <stdint.h>
+// #include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <sys/stat.h>
-#include <sys/sysmacros.h>
-#include <time.h>
+// #include <stdlib.h>
+// #include <sys/stat.h>
+// #include <sys/sysmacros.h>
+// #include <time.h>
 
 #include "instruction.h"
+// #include "global.h"
+
+// Фиктивный операнд - заглушка при невозможности определить его параметры
+// Operand unknownSrcOperand;
 
 InstructionList iList01;
 struct Constant.Int val01;
+
+// Проверка формирования глобальной обобщенной переменной в библиотеке
+// extern struct Operand uOpd;
 
 int main(int argc, char *argv[]) {
   printf("Start\n");
@@ -39,9 +46,11 @@ int main(int argc, char *argv[]) {
   // Minus
   i01 = CreateInstructionMinus(opd01);
   AppendToInstructionList(&iList01, i01);
-
   i01 = CreateInstructionMinus(opd03);
   AppendToInstructionList(&iList01, i01);
+  // i01 = CreateInstructionMinus(&unknownSrcOperand);
+  // DebugOutOfInstruction<i01>(stdout);
+  // AppendToInstructionList(&iList01, i01);
 
   // Add
   i01 = CreateInstructionAdd(opd01, opd01);
@@ -56,5 +65,5 @@ int main(int argc, char *argv[]) {
   DebugOutOfInstructionList(&iList01, stdout);
 
   printf("Stop\n");
-  exit(EXIT_SUCCESS);
+  return 0;
 }
