@@ -4,7 +4,7 @@
 
 #include <stdlib.h>
 #include "instruction.h"
-// #include "global.h"
+#include "global.h"
 
 //==============================================================================
 // Функции, создающие безоперандные инструкции
@@ -113,9 +113,8 @@ static _Bool isCorrectVarTypeOfMinus<Type.Int* varType>(Operand** dst) {
 // Проверка операнда на допустимость. Обработчик обобщения
 static _Bool isCorrectOperandOfMinus<Operand* src>(Operand** dst) {
   // По умолчанию некорректный операнд
-  fprintf(stderr, "--- incorrect Src Operand Of Minus Instruction\n");
-  // *dst = &unknownOperand;
-  *dst = NULL;
+  // fprintf(stderr, "--- incorrect Src Operand Of Minus Instruction\n");
+  *dst = GetUnknownOperand();
   return 0;
 }
 // Проверка операнда на допустимость. Константа
@@ -132,8 +131,8 @@ static _Bool isCorrectOperandOfMinus<Operand.Var* src>(Operand** dst) {
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Создание инструкции Minus
 Instruction* CreateInstructionMinus(Operand* src) {
-  // Operand* dst = &uOpd;
-  Operand* dst = NULL; // Возможно лучше присвоить в начале Unknown
+  Operand* dst = GetUnknownOperand();
+  // Operand* dst = NULL; // Возможно лучше присвоить в начале Unknown
   struct Instruction.Minus *instruction = create_spec(Instruction.Minus);
   instruction->next = NULL;
   // Проверка на корректность входного операнда инструкции Minus

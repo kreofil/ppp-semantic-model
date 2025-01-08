@@ -7,7 +7,7 @@
 // #include <time.h>
 
 #include "instruction.h"
-// #include "global.h"
+#include "global.h"
 
 // Фиктивный операнд - заглушка при невозможности определить его параметры
 // Operand unknownSrcOperand;
@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
   i01 = CreateInstructionExit(opd01);
   AppendToInstructionList(&iList01, i01);
 
-  struct Type* type03 = CreateTypeInt();
+  Type* type03 = GetTypeInt();
   struct Constant* val03 = CreateConstantInt(42);
   Variable* var03 = CreateVariableLocal(type03, val03);
   Operand* opd03 = CreateOperandVariable(var03);
@@ -48,8 +48,7 @@ int main(int argc, char *argv[]) {
   AppendToInstructionList(&iList01, i01);
   i01 = CreateInstructionMinus(opd03);
   AppendToInstructionList(&iList01, i01);
-  // i01 = CreateInstructionMinus(&unknownSrcOperand);
-  // DebugOutOfInstruction<i01>(stdout);
+  // i01 = CreateInstructionMinus(GetUnknownOperand());
   // AppendToInstructionList(&iList01, i01);
 
   // Add
@@ -60,6 +59,10 @@ int main(int argc, char *argv[]) {
   i01 = CreateInstructionAdd(opd03, opd01);
   AppendToInstructionList(&iList01, i01);
   i01 = CreateInstructionAdd(opd03, opd03);
+  AppendToInstructionList(&iList01, i01);
+  struct Constant* val04 = GetConstIntZero();
+  Operand* opd04 = CreateOperandConstant(val04);
+  i01 = CreateInstructionAdd(opd04, opd01);
   AppendToInstructionList(&iList01, i01);
 
   DebugOutOfInstructionList(&iList01, stdout);

@@ -85,7 +85,7 @@ static _Bool isCorrectOperandsOfAdd
 static _Bool isCorrectOperandsOfAdd
                 <Operand.Const* src1, Operand.Const* src2>(Operand** dst) {
   Constant* constant1 = src1->@;
-  Constant* constant2 = src1->@;
+  Constant* constant2 = src2->@;
   return isCorrectConstantsOfAdd<constant1, constant2>(dst);
 }
 // Проверка, что первый операнд - константа, второй - переменная

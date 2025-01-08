@@ -3,9 +3,15 @@
 // global.h
 // Объявление внешних переменных, используемых в семантической модели.
 
-// #include "operand.h"
+#include "operand.h"
 
-// Фиктивный операнд - заглушка при невозможности определить его параметры
-extern struct Operand unknownOperand;
+// Обращение к целочисленному типу
+Type* GetTypeInt();
+
+// Обращение к нулевой целочисленной константе
+Constant* GetConstIntZero();
+
+// Обращение к фиктивному операнду для получения его указателя
+Operand* GetUnknownOperand();
 
 #endif // __global__
