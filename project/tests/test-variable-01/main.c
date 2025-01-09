@@ -1,12 +1,8 @@
 // main.c
-#include <stdint.h>
-#include <stdio.h>
 #include <stdlib.h>
-#include <sys/stat.h>
-#include <sys/sysmacros.h>
-#include <time.h>
 
 #include "variable.h"
+#include "global.h"
 
 struct Type.Int type01;
 struct Constant.Int val01;
@@ -35,14 +31,17 @@ int main(int argc, char *argv[]) {
   free(val03);
   free(var03);
 
-  type03 = CreateTypeInt();
+  type03 = GetTypeInt();
   val03 = CreateConstantInt(666);
   var03 = CreateVariableTemp(type03, val03);
   DebugOutOfVariableCommon(var03, stdout);
-  free(type03);
   free(val03);
   free(var03);
 
+  var03 = CreateVariableTemp(GetTypeInt(), GetConstIntZero());
+  DebugOutOfVariableCommon(var03, stdout);
+  free(var03);
+
   printf("Stop\n");
-  exit(EXIT_SUCCESS);
+  return 0;
 }

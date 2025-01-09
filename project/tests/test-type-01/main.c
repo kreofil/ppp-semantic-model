@@ -1,12 +1,8 @@
 // main.c
-#include <stdint.h>
-#include <stdio.h>
 #include <stdlib.h>
-#include <sys/stat.h>
-#include <sys/sysmacros.h>
-#include <time.h>
 
-#include "type.h"
+// #include "type.h"
+#include "global.h"
 
 struct Type.Int type03;
 
@@ -23,6 +19,8 @@ int main(int argc, char *argv[]) {
   DebugOutOfType<type02>(stdout);
   free(type02);
 
+  DebugOutOfType<GetTypeInt()>(stdout);
+
   printf("Stop\n");
-  exit(EXIT_SUCCESS);
+  return 0;
 }

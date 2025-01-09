@@ -1,12 +1,7 @@
 // main.c
-#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/stat.h>
-#include <sys/sysmacros.h>
-#include <time.h>
 
-// #include "constant-spec.h"
 #include "context.h"
 #include "name-table.h"
 
