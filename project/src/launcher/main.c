@@ -5,13 +5,19 @@
 #include <sys/stat.h>
 #include <sys/sysmacros.h>
 #include <time.h>
+#include <wchar.h>
+#include <locale.h>
 
-#include "context.h"
+// #include "context.h"
 
-struct Constant.Int intConstExt;
+// struct Constant.Int intConstExt;
 // struct Context<constant<Int> > intConstContextExt;
 
+// Начальные установки параметров компилятора и его запуск
+_Bool StartCompiler(wchar_t *in, size_t in_len);
+
 int main(int argc, char *argv[]) {
+  setlocale(LC_ALL, ""); //get the OS's locale.
   printf("Start\n");
 
   struct stat sb;
@@ -43,21 +49,17 @@ int main(int argc, char *argv[]) {
   }
 
   printf("I-node number:            %ju\n", (uintmax_t) sb.st_ino);
-
   printf("Mode:                     %jo (octal)\n",
           (uintmax_t) sb.st_mode);
-
   printf("Link count:               %ju\n", (uintmax_t) sb.st_nlink);
   printf("Ownership:                UID=%ju   GID=%ju\n",
           (uintmax_t) sb.st_uid, (uintmax_t) sb.st_gid);
-
   printf("Preferred I/O block size: %jd bytes\n",
           (intmax_t) sb.st_blksize);
   printf("File size:                %jd bytes\n",
           (intmax_t) sb.st_size);
   printf("Blocks allocated:         %jd\n",
           (intmax_t) sb.st_blocks);
-
   printf("Last status change:       %s", ctime(&sb.st_ctime));
   printf("Last file access:         %s", ctime(&sb.st_atime));
   printf("Last file modification:   %s", ctime(&sb.st_mtime));
@@ -69,9 +71,31 @@ int main(int argc, char *argv[]) {
   size_t stringLength = fread(unitBuffer, sizeof(char), fileSize, inFile);
   fclose(inFile);
   unitBuffer[stringLength] = '\0';
+
+  // Тестовый вывод информации о прочитанном файле.
   printf("stringLength = %ld\n", stringLength);
   printf("%s", unitBuffer);
+
+  // Формирование строки из широких символов (рун?) и заполнение ее
+  wchar_t *unitBufferUtf32 = malloc(stringLength * 4);
+  // Перенос текущей строки в строку рун
+  size_t widthLengthUtf32 = mbstowcs(unitBufferUtf32, unitBuffer, stringLength);
+  if(widthLengthUtf32 == -1) {
+    printf("Incorrect moving of unitBuffer to unitBufferUtf32\n");
+    exit(5);
+  }
+  unitBufferUtf32[widthLengthUtf32+1] = L'\0';
+
+  printf("widthLengthUtf32 = %ld\n", widthLengthUtf32);
+  // Вывод широкой строки на дисплей.
+  // printf("%ls\n", unitBufferUtf32);
+
+  // Запуск компилятора
+  StartCompiler(unitBufferUtf32, widthLengthUtf32);
+
+  // Очистка выделенной памяти
   free(unitBuffer);
+  free(unitBufferUtf32);
 
   printf("Finish\n");
   exit(EXIT_SUCCESS);

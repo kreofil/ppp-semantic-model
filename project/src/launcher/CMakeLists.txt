@@ -8,7 +8,8 @@ add_executable(obould main.c ${SOURCE_FILES})
 
 # Линковка программы с библиотеками
 target_link_libraries(obould
-    -Wl,--whole-archive
-        smodel
-    -Wl,--no-whole-archive
+    # -Wl,--whole-archive
+    #     smodel
+    # -Wl,--no-whole-archive
+    compiler
 )

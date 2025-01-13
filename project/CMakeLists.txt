@@ -14,12 +14,17 @@ set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type is Debug" FORCE)
 
 #set(CMAKE_INCLUDE_CURRENT_DIR ON)
 include_directories(BEFORE
+    src/compiler
     src/smodel
 )
 link_directories(./lib)
 
+# compiler
 add_subdirectory(src/launcher)
+add_subdirectory(src/compiler)
 add_subdirectory(src/smodel)
+
+# tests
 add_subdirectory(tests/test-constant-01)
 add_subdirectory(tests/test-type-01)
 add_subdirectory(tests/test-variable-01)
