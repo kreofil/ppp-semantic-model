@@ -10,14 +10,15 @@
 //------------------------------------------------------------------------------
 // Функция вывода элемента таблицы имен
 void DebugOutOfNameTableElement(NameTableElement* pElement, FILE* file) {
-  fprintf(file, "%s\n    ---> ", pElement->name);
+  fprintf(file, "%ls\n    ---> ", pElement->name);
   DebugOutOfContext< pElement->pContext >(file);
 }
 
 //------------------------------------------------------------------------------
 // Функция сравнения имени элемента с образцом
-_Bool IsElementEqual(NameTableElement* pElement, char* samle) {
-  if(!strcmp(pElement->name, samle)) {
+_Bool IsElementEqual(NameTableElement* pElement, wchar_t* samle) {
+  // if(!strcmp(pElement->name, samle)) {
+  if(!wcscmp(pElement->name, samle)) {
     return 1;
   }
   return 0;
@@ -31,8 +32,9 @@ void InitNameTable(NameTable* nameTable) {
 
 //------------------------------------------------------------------------------
 // Добавление элемента в таблицу имен
-void AddElementToNameTable(NameTable* nameTable, char *name, Context *context) {
-  strcpy(nameTable->element[nameTable->size].name, name);
+void AddElementToNameTable(NameTable* nameTable, wchar_t *name, Context *context) {
+  wcscpy(nameTable->element[nameTable->size].name, name);
+  // strcpy(nameTable->element[nameTable->size].name, name);
   nameTable->element[nameTable->size].pContext = context;
   ++(nameTable->size);
 }
@@ -52,7 +54,7 @@ void DebugOutOfNameTable(NameTable* nameTable, FILE* file) {
 
 //------------------------------------------------------------------------------
 // Функция поиска элемента в таблице имен по образцу
-NameTableElement* findElementInTable(NameTable* nameTable, char* sample) {
+NameTableElement* findElementInTable(NameTable* nameTable, wchar_t* sample) {
   for(int i = 0; i < nameTable->size; ++i) {
     if(IsElementEqual(&(nameTable->element[i]), sample)) {
       // DebugOutOfNameTableElement(&(nameTable->element[i]), stdout);

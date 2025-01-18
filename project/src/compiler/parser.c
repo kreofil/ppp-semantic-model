@@ -1,4 +1,6 @@
 #include "parser.h"
+#include "name-table.h"
+#include "global.h"
 
 //-----------------------------------------------------------------------------
 // Список ключевых и зарезервированных слов,
@@ -37,7 +39,7 @@ _Bool StartCompiler(wchar_t *in, size_t in_len) {
     printf("%ls\n", cd.code);
     printf("\n***** COMPILER STARTED *****\n");
 
-    if(isArtefact(&cd)) {
+    if(isUnit(&cd)) {
         printf("OK\n");
     } else {
         printf("FAIL\n");
@@ -45,6 +47,7 @@ _Bool StartCompiler(wchar_t *in, size_t in_len) {
     }
 
     // sm->DebugOut();
+    DebugOutOfNameTable(GetGlobalNameTable(), stdout);
     return true;    // while
 }
 
@@ -53,83 +56,233 @@ _Bool StartCompiler(wchar_t *in, size_t in_len) {
 //=============================================================================
 
 //-----------------------------------------------------------------------------
-//! Artefact = ConstDefinition | FuncDefinition | ProtoDefinition
-//!          | TypeDefinition  | ImportDefinition
-_Bool isArtefact(CompilerData *cd) {
+// Первоначальное определение очень простое...
+// Unit = {/ (VarDefinition | Statement) [';'|{'\n'}] /}
+_Bool isUnit(CompilerData *cd) {
     wchar_t artefactName[bufMaxLen]; artefactName[0] = L'\0';
     Ignore(cd);   // пропуск пробелов и комментариев перед первой лексемой
-//_0: Проверка на имя артефакта или начало его определения
-    // В начале проверяется константа, чтобы обойти проверку обозначений
-    // ключевые слова для true и false
-    if (isConstDefinition(cd)) {
-        goto _3;
-    }
-    // Проверка на обозначение артефакта
-    if(isSimpleName(cd)) {
-        wcscpy(artefactName, cd->lexValue); // Фиксация имени артефакта
-        Ignore(cd); // пропуск пробельных символов и комментариев
+//_0: Проверка на описание переменной или оператор
+    if (isVarDefinition(cd)) {
         goto _1;
     }
-    // Далее пошли варианты с описанием альтернативных артефактов
-    // с последующим постфиксным обозначением
-    Err(cd, L"Artefact: It is not artefact");
+    if (isStatement(cd)) {
+        goto _1;
+    }
+    // Начальный терминал не может начинаться с неправильных нетерминалов
+    Err(cd, L"Unit 00: It is not unit");
     return false;
-_1: // Проверка на лексему левого обозначения.
-    if(isLeftAssign(cd)) {
-        Ignore(cd);
-        goto _2;
-    }
-    Err(cd, L"Artefact: It is not Left Assignment (<<)");
-    return false;
-_2:
-    // Далее пошли варианты с описанием альтернативных артефактов
-    // после префиксного обозначения
-    if (isConstDefinition(cd)) {
-        // Добавление артефакта в таблицу описаний (или замена старого артефакта)
-        //smodel.ExportNameTab[artefactName] = *context
-        goto _5;
-    }
-_3: // Должно быть постфиксное обозначение
-    if(isRightAssign(cd)) {
-        Ignore(cd);
-        goto _4;
-    }
-    Err(cd, L"Artefact: It is not Right Assignment (>>)");
-    return false;
-_4: // И завершающее имя...
-    if(isSimpleName(cd)) {
-        //smodel.SetArtefactName() // Фиксация имени артефакта
-        //smodel.RemoveDeclaration()    // Удаление описания из таблицы описаний
-        wcscpy(artefactName, cd->lexValue); // Фиксация имени артефакта
-        Ignore(cd);
-        goto _5;
-    }
-_5: // В конце возможна точка с запятой
+_1: // Проверка на точку с запятой, перевод строки, конец файла.
     if(isSymbol(cd->symbol, L';')) {
         NextSym(cd);
         Ignore(cd);
-        goto _6;
+        goto _2;
     }
-    goto _6;
-_6: // Завершение просмотра на конец строки
     if(isEnd(cd->symbol)) {
         goto _end;
     }
-    printf("%d\n", cd->symbol);
-    Err(cd, L"Artefact: Incorrect symbols at  the end of Artefact");
+    printf("symbol = %lc(%d)\n", cd->symbol, cd->symbol);
+    Err(cd, L"Unit 01: Expected ';', EOF");
     return false;
+_2:
+  if (isVarDefinition(cd)) {
+    goto _1;
+  }
+  if (isStatement(cd)) {
+    goto _1;
+  }
+  if(isEnd(cd->symbol)) {
+    goto _end;
+  }
+  Err(cd, L"Unit 02: Expected VarDefinition, Statement, EOF");
+  return false;
 _end:
-    Ignore(cd);   // пропуск пробельных символов и комментариев
-    // Добавление имени артефакта в семантическую модель
-    // sm.SetArtefactName(artefactName);
-    // Добавление артефакта в таблицу описаний (или замена старого артефакта)
-    // pdcl->SetName(artefactName);
-    // if(sm.AddToExportNameTable(pdcl)) {
-        // return true;
-    // }
-    // Err(cd, L"Artefact: Incorrect extention of export table");
-    // return false;
-    return true;
+  Ignore(cd);   // пропуск пробельных символов и комментариев
+  return true;
+}
+
+//-----------------------------------------------------------------------------
+// Определение переменной (в начале очень простое, но затем...)
+// VarDefinition = var Id {',' Id} ':' TypeId
+_Bool isVarDefinition(CompilerData *cd) {
+  // Список имен объявляемых переменных
+  wchar_t varNamesList[varMaxSize][bufMaxLen];
+  int varCount = 0;   // Счетчик накапливаемых переменных
+  NameTable* globalNameTable = GetGlobalNameTable();
+  wchar_t artefactName[bufMaxLen];
+  artefactName[0] = L'\0';
+// 0:
+  if(isReservedWord(cd, L"var")) {
+    Ignore(cd);
+    goto _1;
+  }
+  return false;
+_1: // Проверяется наличие простого имени, определяемой переменной
+  if (isSimpleName(cd)) {
+    Ignore(cd);
+    // Проверка, что имя не встретилось раньше в этом описании
+    for(int i = 0; i < varCount; ++i) {
+      if(!wcscmp(varNamesList[i], cd->lexValue)) {
+        Err(cd, L"VarDefinition 01.01: Second name definition");
+        return false;
+      }
+    }
+    // Проверка на то что имя отсутсвует в таблице имен
+    if(findElementInTable(globalNameTable, cd->lexValue) != NULL) {
+      Err(cd,
+          L"VarDefinition 01.02: Second name definition in the global table");
+      return false;
+    }
+    // Фиксация имени в списке накапливаемых имен, если ОК
+    wcscpy(varNamesList[varCount++], cd->lexValue);
+    goto _2;
+  }
+  Err(cd, L"VarDefinition 01: Expected name of variable");
+  return false;
+_2: //  ',' | ':'
+  if(isSymbol(cd->symbol, L',')) {
+    NextSym(cd);
+    Ignore(cd);
+    goto _1;
+  }
+  if(isSymbol(cd->symbol, L':')) {
+    NextSym(cd);
+    Ignore(cd);
+    goto _3;
+  }
+  Err(cd, L"VarDefinition 02: Expected ',' or ':'");
+  return false;
+_3: // Тип переменной (пока только именованный скаляр)
+  if (isSimpleName(cd)) {
+    Ignore(cd);
+    goto _end;
+  }
+  Err(cd, L"VarDefinition 03: Expected name of type");
+  return false;
+_end:
+  // После накопления переменных и их типа данные можно занести в таблицу имен
+  // Создается контекст переменной для каждого имени
+  for(int i = 0; i < varCount; ++i) {
+    // Создание контекста
+    // ??! Тип пока в лоб. Нужно не забыть поменять после добавления проверки типа
+    Variable* variable = CreateVariableGlobal(GetTypeInt(), GetConstIntZero());
+    Context* context = CreateContextVar(variable);
+    // Добавление контекста в таблицу имен
+    AddElementToNameTable(globalNameTable, varNamesList[i], context);
+  }
+  Ignore(cd);   // пропуск пробельных символов и комментариев
+  return true;
+}
+
+//-----------------------------------------------------------------------------
+// Оператор (присваивания, тривиальный, но затем...)
+_Bool isStatement(CompilerData *cd) {
+// 0:
+  if(isSimpleName(cd)) {
+    Ignore(cd);
+    goto _1;
+  }
+  return false;
+_1:
+  if(isSymbol(cd->symbol, L'=')) {
+    NextSym(cd);
+    Ignore(cd);
+    goto _2;
+  }
+  Err(cd, L"Statement 01: Expected '='");
+_2:
+  if(isSimpleName(cd)) {
+    Ignore(cd);
+    goto _end;
+  }
+  if(isInteger(cd)) {
+    Ignore(cd);
+    goto _end;
+  }
+_end:
+  Ignore(cd);   // пропуск пробельных символов и комментариев
+  return true;
+}
+
+
+//-----------------------------------------------------------------------------
+//! Artefact = ConstDefinition | FuncDefinition | ProtoDefinition
+//!          | TypeDefinition  | ImportDefinition
+_Bool isArtefact(CompilerData *cd) {
+  wchar_t artefactName[bufMaxLen];
+  artefactName[0] = L'\0';
+  Ignore(cd);   // пропуск пробелов и комментариев перед первой лексемой
+//_0: Проверка на имя артефакта или начало его определения
+  // В начале проверяется константа, чтобы обойти проверку обозначений
+  // ключевые слова для true и false
+  if (isConstDefinition(cd)) {
+      goto _3;
+  }
+  // Проверка на обозначение артефакта
+  if(isSimpleName(cd)) {
+    wcscpy(artefactName, cd->lexValue); // Фиксация имени артефакта
+    Ignore(cd); // пропуск пробельных символов и комментариев
+    goto _1;
+  }
+  // Далее пошли варианты с описанием альтернативных артефактов
+  // с последующим постфиксным обозначением
+  Err(cd, L"Artefact 0: It is not artefact");
+  return false;
+_1: // Проверка на лексему левого обозначения.
+  if(isLeftAssign(cd)) {
+      Ignore(cd);
+      goto _2;
+  }
+  Err(cd, L"Artefact: It is not Left Assignment (<<)");
+  return false;
+_2:
+  // Далее пошли варианты с описанием альтернативных артефактов
+  // после префиксного обозначения
+  if (isConstDefinition(cd)) {
+      // Добавление артефакта в таблицу описаний (или замена старого артефакта)
+      //smodel.ExportNameTab[artefactName] = *context
+      goto _5;
+  }
+_3: // Должно быть постфиксное обозначение
+  if(isRightAssign(cd)) {
+      Ignore(cd);
+      goto _4;
+  }
+  Err(cd, L"Artefact: It is not Right Assignment (>>)");
+  return false;
+_4: // И завершающее имя...
+  if(isSimpleName(cd)) {
+      //smodel.SetArtefactName() // Фиксация имени артефакта
+      //smodel.RemoveDeclaration()    // Удаление описания из таблицы описаний
+      wcscpy(artefactName, cd->lexValue); // Фиксация имени артефакта
+      Ignore(cd);
+      goto _5;
+  }
+_5: // В конце возможна точка с запятой
+  if(isSymbol(cd->symbol, L';')) {
+      NextSym(cd);
+      Ignore(cd);
+      goto _6;
+  }
+  goto _6;
+_6: // Завершение просмотра на конец строки
+  if(isEnd(cd->symbol)) {
+      goto _end;
+  }
+  printf("%d\n", cd->symbol);
+  Err(cd, L"Artefact: Incorrect symbols at  the end of Artefact");
+  return false;
+_end:
+  Ignore(cd);   // пропуск пробельных символов и комментариев
+  // Добавление имени артефакта в семантическую модель
+  // sm.SetArtefactName(artefactName);
+  // Добавление артефакта в таблицу описаний (или замена старого артефакта)
+  // pdcl->SetName(artefactName);
+  // if(sm.AddToExportNameTable(pdcl)) {
+      // return true;
+  // }
+  // Err(cd, L"Artefact: Incorrect extention of export table");
+  // return false;
+  return true;
 }
 
 //=============================================================================

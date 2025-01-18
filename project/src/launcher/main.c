@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
   unitBuffer[stringLength] = '\0';
 
   // Тестовый вывод информации о прочитанном файле.
-  printf("stringLength = %ld\n", stringLength);
+  printf("\nstringLength = %ld\n", stringLength);
   printf("%s", unitBuffer);
 
   // Формирование строки из широких символов (рун?) и заполнение ее
@@ -84,11 +84,12 @@ int main(int argc, char *argv[]) {
     printf("Incorrect moving of unitBuffer to unitBufferUtf32\n");
     exit(5);
   }
-  unitBufferUtf32[widthLengthUtf32+1] = L'\0';
+  // unitBufferUtf32[widthLengthUtf32+1] = L'\0';
+  unitBufferUtf32[widthLengthUtf32] = L'\0';
 
-  printf("widthLengthUtf32 = %ld\n", widthLengthUtf32);
+  printf("\nwidthLengthUtf32 = %ld\n", widthLengthUtf32);
   // Вывод широкой строки на дисплей.
-  // printf("%ls\n", unitBufferUtf32);
+  printf("%ls\n", unitBufferUtf32);
 
   // Запуск компилятора
   StartCompiler(unitBufferUtf32, widthLengthUtf32);

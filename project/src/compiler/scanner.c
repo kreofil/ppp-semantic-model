@@ -148,6 +148,7 @@ _1:
     // printf("isReservedWord:  %ls\n", cd->lexValue);
     // Проверка, что это заданное ключевое слово
     if(!wcscmp(tmpValue, pattern)) {
+        printf("It is key word: %ls\n", tmpValue);
         return true;
     }
     // В противном случае откат к началу

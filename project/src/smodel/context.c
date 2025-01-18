@@ -2,7 +2,6 @@
 // Определения функций, обеспечивающих обработку контекста.
 
 #include <string.h>
-// #include "constant.h"
 #include "context.h"
 
 //==============================================================================
@@ -12,7 +11,8 @@
 //------------------------------------------------------------------------------
 // Функция вывода содержимого контекста
 void DebugOutOfContext<Context* context>(FILE* file) {
-  fprintf(file, "Unknown context\n");
+  // fprintf(file, L"Context:Unknown context\n");
+  fprintf(file, "Context:Unknown context\n");
 }
 
 //==============================================================================
@@ -21,18 +21,39 @@ void DebugOutOfContext<Context* context>(FILE* file) {
 
 //------------------------------------------------------------------------------
 // Функция вывода значения контекста константы
-void DebugOutOfContext<Context.constant* context>(FILE* file) {
-  printf("Check point: constant context ---> ");
-  // struct Context<constant>* pContext = &context->@;
-  // DebugOutOfConstant<pContext>(file);
-  DebugOutOfConstant<&(context->@)>(file);
+void DebugOutOfContext<Context.Const* context>(FILE* file) {
+  printf("Context.Const: ");
+  // DebugOutOfConstant<context->@>(file);
+  Constant* c = context->@;
+  DebugOutOfConstant<c>(file);
 }
 
 //------------------------------------------------------------------------------
 // Функция, создающая контекст для именованной целочисленной константы
 Context* CreateContextConstInt(int value) {
-  struct Context.constant.Int *context =
-          create_spec(Context.constant.Int);
-  context->@.@constValue = value;
+  struct Context.Const *context = create_spec(Context.Const);
+  struct Constant.Int *constant = create_spec(Constant.Int);
+  constant->@constValue = value;
+  context->@ = constant;
+  return (Context*)context;
+}
+
+//==============================================================================
+// Функции для обработки контекста переменной
+//==============================================================================
+
+//------------------------------------------------------------------------------
+// Функция вывода контекста переменной
+void DebugOutOfContext<Context.Var* context>(FILE* file) {
+  Variable* v = context->@;
+  DebugOutOfVariableCommon(v, file);
+}
+
+//------------------------------------------------------------------------------
+// Функция создающая контекст для любой переменной,
+// подключаемой к этому контексту
+Context* CreateContextVar(Variable* variable) {
+  struct Context.Var *context = create_spec(Context.Var);
+  context->@ = variable;
   return (Context*)context;
 }

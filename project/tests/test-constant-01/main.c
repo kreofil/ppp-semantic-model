@@ -6,13 +6,15 @@
 #include "name-table.h"
 
 struct Constant.Int intConstExt;
-// struct Context<constant<Int> > intConstContextExt;
+// struct Context<Const<Int> > intConstContextExt;
 
 int main(int argc, char *argv[]) {
   printf("Start\n");
 
   NameTable nameTable;
-  struct Context.constant.Int *pIntContext;
+  struct Constant.Int intConst;
+  struct Context.Const intContext;
+  intContext.@ = (Constant*)&intConst;
   Context *pContext;
 
   InitNameTable(&nameTable);
@@ -20,30 +22,30 @@ int main(int argc, char *argv[]) {
 
   pContext = CreateContextConstInt(10);
   // DebugOutOfContext<pContext>(stdout);
-  AddElementToNameTable(&nameTable, "id_int_10", pContext);
+  AddElementToNameTable(&nameTable, L"id_int_10", pContext);
   DebugOutOfNameTable(&nameTable, stdout);
 
   pContext = CreateContextConstInt(20);
   // DebugOutOfContext<pContext>(stdout);
-  AddElementToNameTable(&nameTable, "id_int_20", pContext);
+  AddElementToNameTable(&nameTable, L"id_int_20", pContext);
   DebugOutOfNameTable(&nameTable, stdout);
 
   pContext = CreateContextConstInt(30);
   // DebugOutOfContext<pContext>(stdout);
-  AddElementToNameTable(&nameTable, "id_int_30", pContext);
+  AddElementToNameTable(&nameTable, L"id_int_30", pContext);
   DebugOutOfNameTable(&nameTable, stdout);
 
   pContext = CreateContextConstInt(40);
   // DebugOutOfContext<pContext>(stdout);
-  AddElementToNameTable(&nameTable, "id_int_40", pContext);
+  AddElementToNameTable(&nameTable, L"id_int_40", pContext);
   DebugOutOfNameTable(&nameTable, stdout);
 
   pContext = CreateContextConstInt(50);
   // DebugOutOfContext<pContext>(stdout);
-  AddElementToNameTable(&nameTable, "id_int_50", pContext);
+  AddElementToNameTable(&nameTable, L"id_int_50", pContext);
   DebugOutOfNameTable(&nameTable, stdout);
 
-  NameTableElement *pElement = findElementInTable(&nameTable, "id_int_40");
+  NameTableElement *pElement = findElementInTable(&nameTable, L"id_int_40");
   if(pElement != NULL) {
     printf("Finded Element is:\n ");
     DebugOutOfNameTableElement(pElement, stdout);
@@ -51,21 +53,21 @@ int main(int argc, char *argv[]) {
     printf("No element using \"id_int_40\" name");
   }
 
-  if((pElement = findElementInTable(&nameTable, "id_int_10")) != NULL) {
+  if((pElement = findElementInTable(&nameTable, L"id_int_10")) != NULL) {
     printf("Finded Element is:\n ");
     DebugOutOfNameTableElement(pElement, stdout);
   } else {
     printf("No element using \"id_int_10\" name");
   }
 
-  if((pElement = findElementInTable(&nameTable, "id_int_1000")) != NULL) {
+  if((pElement = findElementInTable(&nameTable, L"id_int_1000")) != NULL) {
     printf("Finded Element is:\n ");
     DebugOutOfNameTableElement(pElement, stdout);
   } else {
     printf("No element using \"id_int_1000\" name\n");
   }
 
-  pIntContext = (struct Context.constant.Int*)pContext;
-  DebugOutOfContext<(Context*)pIntContext>(stdout);
+  // pIntContext = (struct Context.Const.Int*)pContext;
+  // DebugOutOfContext<(Context*)pIntContext>(stdout);
   exit(EXIT_SUCCESS);
 }

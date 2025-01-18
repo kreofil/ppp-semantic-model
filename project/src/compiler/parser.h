@@ -8,31 +8,39 @@
 // #include "../smodel/smodel.h"
 // #include "smodel.h"
 
-#define bufMaxLen 256
+#define bufMaxLen 256   // Максимальный размер символьного буфера
+#define varMaxSize 16   // Максимальный число переменных в одном описании
+#define bool _Bool
 #define true 1
 #define false 0
 
 typedef struct CompilerData {
-    wchar_t *code;              // указатель на строку с артефактом (кодом)
-    int pos;                    // текущая позиция в тексте обрабатываемого артефакта
-    int line;                   // строка обрабатываемого артефакта
-    int column;                 // колонка в строке для обрабатываемого артефакта
-    wchar_t lexValue[bufMaxLen];   // подстрока, определяющая текущую набранную лексему
-    int errCount;               // счетчик ошибок
-    wchar_t symbol;                // текущий символ
-    int oldPos;
-    int oldLine;
-    int oldColumn;
-    wchar_t oldSymbol;
-    int qualCount;              // Счетчик идентификаторов в составном имени
-    wchar_t **keyWords;           // Указатель на таблицу ключевых слов
-    // SemanticModel *sm;          // Указатель на семантическую модель языка
+  wchar_t *code;                // указатель на строку с артефактом (кодом)
+  int pos;                      // текущая позиция в тексте
+  int line;                     // строка обрабатываемого артефакта
+  int column;                   // текущая колонка для обрабатываемого артефакта
+  wchar_t lexValue[bufMaxLen];  // подстрока, определяющая текущую лексему
+  int errCount;                 // счетчик ошибок
+  wchar_t symbol;               // текущий символ
+  int oldPos;                   // старая, временно сохраненная позиция
+  int oldLine;                  // старая, временно сохраненная стока
+  int oldColumn;                // старый, временно сохраненный столбец
+  wchar_t oldSymbol;            // старый, временно сохраненный символ
+  int qualCount;                // Счетчик идентификаторов в составном имени
+  wchar_t **keyWords;           // Указатель на таблицу ключевых слов
+  // SemanticModel *sm;            // Указатель на семантическую модель языка
 } CompilerData;
 
 
 //=============================================================================
 // Методы парсера
 //=============================================================================
+// Начальный нетерминал простого языка
+_Bool isUnit(CompilerData *cd);
+// Определение переменной (в начале очень простое, но затем...)
+_Bool isVarDefinition(CompilerData *cd);
+// Оператор (присваивания, тривиальный, но затем...)
+_Bool isStatement(CompilerData *cd);
 // Начальный нетерминал
 _Bool isArtefact(CompilerData *cd);
 // Определение константы

@@ -5,6 +5,7 @@
 // а также прототипов функций, обеспечивающих обработку
 
 #include <stdio.h>
+#include <wchar.h>
 #include "context.h"
 
 //------------------------------------------------------------------------------
@@ -13,7 +14,7 @@
 
 // Элемент таблицы имен
 typedef struct NameTableElement {
-  char name[maxNameLength];   // Имя элемента таблицы имен
+  wchar_t name[maxNameLength];   // Имя элемента таблицы имен
   Context *pContext;      // Указатель на контекст элемента
 } NameTableElement;
 
@@ -37,18 +38,18 @@ typedef struct NameTable{
 void DebugOutOfNameTableElement(NameTableElement* pElement, FILE* file);
 
 // Функция сравнения имени элемента с образцом
-_Bool IsElementEqual(NameTableElement* pElement, char* samle);
+_Bool IsElementEqual(NameTableElement* pElement, wchar_t* samle);
 
 // Функция инициализации таблицы имен
 void InitNameTable(NameTable* nameTable);
 
 // Добавление элемента в таблицу имен
-void AddElementToNameTable(NameTable* nameTable, char *name, Context *context);
+void AddElementToNameTable(NameTable* nameTable, wchar_t *name, Context *context);
 
 // Функция вывода содержимого контекста
 void DebugOutOfNameTable(NameTable* nameTable, FILE* file);
 
 // Функция поиска элемента в таблице имен по образцу
-NameTableElement* findElementInTable(NameTable* nameTable, char* sample);
+NameTableElement* findElementInTable(NameTable* nameTable, wchar_t* sample);
 
 #endif // __name_table__
