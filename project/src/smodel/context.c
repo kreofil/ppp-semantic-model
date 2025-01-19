@@ -34,9 +34,31 @@ Context* CreateContextConstInt(int value) {
   struct Context.Const *context = create_spec(Context.Const);
   struct Constant.Int *constant = create_spec(Constant.Int);
   constant->@constValue = value;
-  context->@ = constant;
+  context->@ = (Constant*)constant;
   return (Context*)context;
 }
+
+//==============================================================================
+// Функции для обработки контекста константы
+//==============================================================================
+
+//------------------------------------------------------------------------------
+// Функция вывода контекста типа
+void DebugOutOfContext<Context.Typ* context>(FILE* file) {
+  printf("Context.Type: ");
+  Type* t = context->@;
+  DebugOutOfType<t>(file);
+}
+
+//------------------------------------------------------------------------------
+// Функция создающая контекст для любого типа,
+// подключаемого к этому контексту
+Context* CreateContextType(Type* type) {
+  struct Context.Typ *context = create_spec(Context.Typ);
+  context->@ = type;
+  return (Context*)context;
+}
+
 
 //==============================================================================
 // Функции для обработки контекста переменной

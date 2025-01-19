@@ -83,6 +83,63 @@ Instruction* CreateInstructionExit(Operand* opd) {
 //==============================================================================
 
 //------------------------------------------------------------------------------
+// Проверка на эквивалентность типов переменной и константы
+static _Bool isSameTypeVarConstAssign<Type* varType, Constant* constant>() {
+  return 0;
+}
+// Проверка, когд это целочисленные переменная и константа
+static _Bool isSameTypeVarConstAssign
+                <Type.Int* varType, Constant.Int* constant>() {
+  return 1;
+}
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Проверка на эквивалентность типов двух переменных
+static _Bool isSameTypeVarVarAssign<Type* dstVarType, Type* srcVarType>() {
+  return 0;
+}
+// Проверка, когда это целочисленные переменные
+static _Bool isSameTypeVarVarAssign<Type.Int* dstVarType, Type.Int* srcVarType>() {
+  return 1;
+}
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Проверка операндов на допустимость. Обработчик обобщения
+static _Bool isCorrectOperandsOfAssign<Operand* dst, Operand* src>() {
+  return 0;
+}
+// Проверка, когда первый операнд переменна, а второй - константа
+static _Bool isCorrectOperandsOfAssign<Operand.Var* dst, Operand.Const* src>() {
+  // Определяется эквивалентность типов
+  Variable* variable = dst->@;
+  Type* varType = variable->varType;
+  Constant* constant = src->@;
+  return isSameTypeVarConstAssign<varType, constant>();
+}
+// Проверка, когда оба операнда переменные
+static _Bool isCorrectOperandsOfAssign<Operand.Var* dst, Operand.Var* src>() {
+  // Определяется эквивалентность типов
+  Variable* dstVar = dst->@;
+  Type* dstVarType = dstVar->varType;
+  Variable* srcVar = dst->@;
+  Type* srcVarType = srcVar->varType;
+  return isSameTypeVarVarAssign<dstVarType, srcVarType>();
+}
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Создание инструкции присваивания
+Instruction* CreateInstructionAssign(Operand* dst, Operand* src) {
+  struct Instruction.Assign *instruction = create_spec(Instruction.Assign);
+  instruction->next = NULL;
+  if(!isCorrectOperandsOfAssign<dst, src>()) {
+    fprintf(stderr, "Incorrect Operands of Assign Instruction!!!\n");
+    DebugOutOfOperand<dst>(stderr);
+    DebugOutOfOperand<src>(stderr);
+    // exit(14);
+  }
+  instruction->@opd1 = src;
+  instruction->@opd0 = dst;
+  return (Instruction*)instruction;
+}
+
+//------------------------------------------------------------------------------
 // Проверка на корректность константы в команде Minus
 static _Bool isCorrectConstantOfMinus<Constant* constant>(Operand** dst) {
   return 0;

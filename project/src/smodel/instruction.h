@@ -44,6 +44,7 @@ typedef struct ThreeOperands {
 // Специализации инструкций
 Instruction + <Halt: void;>;          // Инструкция останова
 Instruction + <Exit: OneOperand;>;    // Инструкция прерывания с кодом ошибки
+Instruction + <Assign: TwoOperands;>; // Инструкция присваивания
 Instruction + <Minus: TwoOperands;>;  // Инструкция смены знака числа
 Instruction + <Add: ThreeOperands;>;  // Инструкция сложения
 
@@ -69,6 +70,8 @@ void DebugOutOfInstruction<struct Instruction* instruction>(FILE* file);
 Instruction* CreateInstructionHalt();
 // Создание инструкции Exit
 Instruction* CreateInstructionExit(Operand* opd);
+// Создание инструкции присваивания
+Instruction* CreateInstructionAssign(Operand* dst, Operand* src);
 // Создание инструкции Minus
 Instruction* CreateInstructionMinus(Operand* src);
 // Создание инструкции сложения

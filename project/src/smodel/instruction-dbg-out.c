@@ -28,6 +28,17 @@ void DebugOutOfInstruction<Instruction.Exit* instruction>(FILE* file) {
 }
 
 //------------------------------------------------------------------------------
+// Отладочная информация об инструкции Assign
+void DebugOutOfInstruction<Instruction.Assign* instruction>(FILE* file) {
+  fprintf(file, "Instruction Assign\n  ");
+  Operand* opd = instruction->@opd0;
+  DebugOutOfOperand<opd>(file);
+  fprintf(file, "     = ");
+  opd = instruction->@opd1;
+  DebugOutOfOperand<opd>(file);
+}
+
+//------------------------------------------------------------------------------
 // Отладочная информация об инструкции Minus
 void DebugOutOfInstruction<Instruction.Minus* instruction>(FILE* file) {
   fprintf(file, "Instruction Minus\n  ");

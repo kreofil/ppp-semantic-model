@@ -65,6 +65,11 @@ int main(int argc, char *argv[]) {
   i01 = CreateInstructionAdd(opd04, opd01);
   AppendToInstructionList(&iList01, i01);
 
+  // Assign
+  i01 = CreateInstructionAssign(opd03, opd01);
+  i01 = CreateInstructionAssign(opd03, opd03);
+  AppendToInstructionList(&iList01, i01);
+
   DebugOutOfInstructionList(&iList01, stdout);
 
   printf("Stop\n");

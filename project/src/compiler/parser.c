@@ -24,31 +24,36 @@ const wchar_t *keyWords[] = {
 //-----------------------------------------------------------------------------
 // Начальные установки параметров компилятора и его запуск
 _Bool StartCompiler(wchar_t *in, size_t in_len) {
-    CompilerData cd;
-    cd.code = in;
-    cd.pos = 0;
-    cd.line = 0;
-    cd.column = 1;
-    cd.lexValue[0] = L'\0';
-    cd.errCount = 0;
-    cd.symbol = cd.code[0];
-    cd.qualCount = 0;
-    cd.keyWords = (wchar_t**)keyWords;
+  CompilerData cd;
+  cd.code = in;
+  cd.pos = 0;
+  cd.line = 0;
+  cd.column = 1;
+  cd.lexValue[0] = L'\0';
+  cd.errCount = 0;
+  cd.symbol = cd.code[0];
+  cd.qualCount = 0;
+  cd.keyWords = (wchar_t**)keyWords;
 
-    printf("***** SOURCE CODE *****\n\n");
-    printf("%ls\n", cd.code);
-    printf("\n***** COMPILER STARTED *****\n");
+  InitGlobalData();   // Инициализация глобальных данных
 
-    if(isUnit(&cd)) {
-        printf("OK\n");
-    } else {
-        printf("FAIL\n");
-        return false;
-    }
+  printf("***** SOURCE CODE *****\n\n");
+  printf("%ls\n", cd.code);
+  printf("\n***** COMPILER STARTED *****\n");
 
-    // sm->DebugOut();
-    DebugOutOfNameTable(GetGlobalNameTable(), stdout);
-    return true;    // while
+  if(isUnit(&cd)) {
+    printf("OK\n");
+  } else {
+    printf("FAIL\n");
+    return false;
+  }
+
+  // sm->DebugOut();
+  printf("\n***** RESERVED NAME TABLE *****\n");
+  DebugOutOfNameTable(GetReservedNameTable(), stdout);
+  printf("\n***** GLOBAL NAME TABLE *****\n");
+  DebugOutOfNameTable(GetGlobalNameTable(), stdout);
+  return true;    // while
 }
 
 //=============================================================================
@@ -59,30 +64,30 @@ _Bool StartCompiler(wchar_t *in, size_t in_len) {
 // Первоначальное определение очень простое...
 // Unit = {/ (VarDefinition | Statement) [';'|{'\n'}] /}
 _Bool isUnit(CompilerData *cd) {
-    wchar_t artefactName[bufMaxLen]; artefactName[0] = L'\0';
-    Ignore(cd);   // пропуск пробелов и комментариев перед первой лексемой
+  wchar_t artefactName[bufMaxLen]; artefactName[0] = L'\0';
+  Ignore(cd);   // пропуск пробелов и комментариев перед первой лексемой
 //_0: Проверка на описание переменной или оператор
-    if (isVarDefinition(cd)) {
-        goto _1;
-    }
-    if (isStatement(cd)) {
-        goto _1;
-    }
-    // Начальный терминал не может начинаться с неправильных нетерминалов
-    Err(cd, L"Unit 00: It is not unit");
-    return false;
+  if (isVarDefinition(cd)) {
+    goto _1;
+  }
+  if (isStatement(cd)) {
+    goto _1;
+  }
+  // Начальный терминал не может начинаться с неправильных нетерминалов
+  Err(cd, L"Unit 00: It is not unit");
+  return false;
 _1: // Проверка на точку с запятой, перевод строки, конец файла.
-    if(isSymbol(cd->symbol, L';')) {
-        NextSym(cd);
-        Ignore(cd);
-        goto _2;
-    }
-    if(isEnd(cd->symbol)) {
-        goto _end;
-    }
-    printf("symbol = %lc(%d)\n", cd->symbol, cd->symbol);
-    Err(cd, L"Unit 01: Expected ';', EOF");
-    return false;
+  if(isSymbol(cd->symbol, L';')) {
+    NextSym(cd);
+    Ignore(cd);
+    goto _2;
+  }
+  if(isEnd(cd->symbol)) {
+    goto _end;
+  }
+  printf("symbol = %lc(%d)\n", cd->symbol, cd->symbol);
+  Err(cd, L"Unit 01: Expected ';', EOF");
+  return false;
 _2:
   if (isVarDefinition(cd)) {
     goto _1;
@@ -108,8 +113,11 @@ _Bool isVarDefinition(CompilerData *cd) {
   wchar_t varNamesList[varMaxSize][bufMaxLen];
   int varCount = 0;   // Счетчик накапливаемых переменных
   NameTable* globalNameTable = GetGlobalNameTable();
-  wchar_t artefactName[bufMaxLen];
-  artefactName[0] = L'\0';
+  NameTable* reservedNameTable = GetReservedNameTable();
+  Type* varType = NULL; // Стоит заменить на неопределенный тип (ввести)
+  Constant* constValue = NULL; // Стоит заменить на неопределенное значение
+  // wchar_t artefactName[bufMaxLen];
+  // artefactName[0] = L'\0';
 // 0:
   if(isReservedWord(cd, L"var")) {
     Ignore(cd);
@@ -132,6 +140,12 @@ _1: // Проверяется наличие простого имени, опр
           L"VarDefinition 01.02: Second name definition in the global table");
       return false;
     }
+    // Проверка на то что имя отсутсвует в таблице зарезервированных имен
+    if(findElementInTable(reservedNameTable, cd->lexValue) != NULL) {
+      Err(cd,
+          L"VarDefinition 01.03: This name is in the reserved name table");
+      return false;
+    }
     // Фиксация имени в списке накапливаемых имен, если ОК
     wcscpy(varNamesList[varCount++], cd->lexValue);
     goto _2;
@@ -152,10 +166,16 @@ _2: //  ',' | ':'
   Err(cd, L"VarDefinition 02: Expected ',' or ':'");
   return false;
 _3: // Тип переменной (пока только именованный скаляр)
-  if (isSimpleName(cd)) {
+  if (isReservedWord(cd, L"int")) {
+    varType = GetTypeInt();
+    constValue = GetConstIntZero();
     Ignore(cd);
     goto _end;
   }
+  // if (isSimpleName(cd)) {
+  //   Ignore(cd);
+  //   goto _end;
+  // }
   Err(cd, L"VarDefinition 03: Expected name of type");
   return false;
 _end:
@@ -164,7 +184,7 @@ _end:
   for(int i = 0; i < varCount; ++i) {
     // Создание контекста
     // ??! Тип пока в лоб. Нужно не забыть поменять после добавления проверки типа
-    Variable* variable = CreateVariableGlobal(GetTypeInt(), GetConstIntZero());
+    Variable* variable = CreateVariableGlobal(varType, constValue);
     Context* context = CreateContextVar(variable);
     // Добавление контекста в таблицу имен
     AddElementToNameTable(globalNameTable, varNamesList[i], context);
@@ -175,6 +195,7 @@ _end:
 
 //-----------------------------------------------------------------------------
 // Оператор (присваивания, тривиальный, но затем...)
+// Statement = id '=' (id | integer)
 _Bool isStatement(CompilerData *cd) {
 // 0:
   if(isSimpleName(cd)) {
